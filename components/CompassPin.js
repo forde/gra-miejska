@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet} from 'react-native';
 
 export default props => {
-    const { color, rotation, outline } = props;
-    const styles = pinStyles({color, rotation, outline });
+    const { color, rotation, outline, noArm } = props;
+    const styles = pinStyles({color, rotation, noArm });
     return(
         <View style={ styles.pin }>
             <View style={props.outline ? styles.pinHeadOutline : styles.pinHead} >
@@ -13,7 +13,7 @@ export default props => {
     );
 }
 
-const pinStyles = ({color, rotation, outline }) => {
+const pinStyles = ({color, rotation, noArm }) => {
     return StyleSheet.create({
         pin: {
             width: 1,
@@ -23,7 +23,7 @@ const pinStyles = ({color, rotation, outline }) => {
             left: '50%',
             //borderWidth: 1,
             //borderColor: color,
-            backgroundColor: color,
+            backgroundColor: noArm ? 'transparent' : color,
             transform: [
                 //{ translateX: -10 },
                 { translateY: -150 },
@@ -48,15 +48,15 @@ const pinStyles = ({color, rotation, outline }) => {
             top:-15,
             left: -15,
             backgroundColor: 'transparent',
-            borderWidth: 2,
+            borderWidth: 1,
             borderColor: color,
             borderRadius: 15,
-            backgroundColor: 'white',
+            backgroundColor: '#F9F5ED',
         },
         label: {
             color: color,
             position: 'absolute',
-            top: -20,
+            top: -24,
             left: 0,
             width: 100,
             textAlign: 'center',

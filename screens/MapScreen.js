@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, SegmentedControlIOS } from '
 import { MapView, Location, Permissions } from 'expo';
 
 import Compass from '../components/Compass';
-import { finalBearing } from '../constants/helpers';
+import Loader from '../components/Loader';
 
 export default class MapScreen extends React.Component {
 
@@ -40,8 +40,7 @@ export default class MapScreen extends React.Component {
     }
 
     _getLocationAsync = async () => {
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);
-
+        await Permissions.askAsync(Permissions.LOCATION);
         Location.watchPositionAsync({ 
             enableHighAccuracy: true,
             distanceInterval: .2, // in meters
@@ -50,11 +49,17 @@ export default class MapScreen extends React.Component {
         });
     }
 
-    _onCompassNorthChange(compassNortDeg) {
-        const northPole = Math.round(finalBearing(this.state.location.coords.latitude, this.state.location.coords.longitude, 90, 0));
-        const rot = compassNortDeg - northPole + northPole;
-        this.setState({ mapRotation: rot })
-        //console.log('map rotation: ', rot);
+    _mapStyles() {
+        return { height: 650, width: 650, transform: [ {rotate: this.state.mapRotation + 'deg'} ] }
+    }
+
+    _mapRegion() {
+        return {
+            latitude: this.state.location.coords.latitude,
+            longitude: this.state.location.coords.longitude,
+            latitudeDelta: 0.001,
+            longitudeDelta: 0.001
+        }
     }
 
     render() {
@@ -65,33 +70,13 @@ export default class MapScreen extends React.Component {
         return (
             <View style={styles.wrapper}>
 
-                {!location &&
-                    <View>
-                        <ActivityIndicator size="large" style={{marginBottom:10}} />
-                        <Text>Ustalanie lokalizacji</Text>
-                    </View>
-                }
+                {!location && <Loader description="Ustalanie lokalizacji" />}
 
                 {location &&
                     <React.Fragment>
-                        <MapView
-                            style={{ 
-                                height: 650, 
-                                width: 650,  
-                                transform: [ {rotate: mapRotation + 'deg'} ] 
-                            }}
-                            region={{
-                                latitude: location.coords.latitude,
-                                longitude: location.coords.longitude,
-                                latitudeDelta: 0.001,
-                                longitudeDelta: 0.001
-                            }}
-                        >
-                            {/* user location 
-                            <MapView.Marker coordinate={location.coords} />*/}
-                                
-                            {marker && <MapView.Marker coordinate={marker} /> }
 
+                        <MapView style={this._mapStyles()} region={this._mapRegion()} >
+                            {marker && <MapView.Marker coordinate={marker} /> }
                         </MapView>
                             
                         {marker &&
@@ -100,22 +85,22 @@ export default class MapScreen extends React.Component {
                                 posLng={location.coords.longitude}
                                 markerLat={marker.latitude}
                                 markerLng={marker.longitude}
-                                onCompassNorthChange={this._onCompassNorthChange.bind(this)}
                                 mapRotation={mapRotation}
+                                setMapRotation={mapRotation => this.setState({ mapRotation })}
                             />
                         }
 
-                        <SegmentedControlIOS
-                            style={{position:'absolute', top:20, left: 35, width:300 }}
-                            values={['SkatePark', 'Mieszkanie', 'Galeria']}
-                            selectedIndex={selectedMarker}
-                            onChange={(event) => {
-                                this.setState({selectedMarker: event.nativeEvent.selectedSegmentIndex});
-                            }}
-                        />
-
                     </React.Fragment>
                 }
+
+                <SegmentedControlIOS
+                    style={{position:'absolute', top:20, left: 35, width:300 }}
+                    values={['SkatePark', 'Mieszkanie', 'Galeria']}
+                    selectedIndex={selectedMarker}
+                    onChange={(event) => {
+                        this.setState({selectedMarker: event.nativeEvent.selectedSegmentIndex});
+                    }}
+                />
 
             </View>
         );

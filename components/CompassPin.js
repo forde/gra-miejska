@@ -2,18 +2,18 @@ import React from 'react';
 import { View, Text, StyleSheet} from 'react-native';
 
 export default props => {
-    const { color, rotation, outline, noArm } = props;
-    const styles = pinStyles({color, rotation, noArm });
+    const { color, rotation, outline, noArm, noDot } = props;
+    const styles = pinStyles({color, rotation, noArm, noDot });
     return(
         <View style={ styles.pin }>
-            <View style={props.outline ? styles.pinHeadOutline : styles.pinHead} >
+            <View style={outline ? styles.pinHeadOutline : styles.pinHead} >
                 {props.label && <Text style={styles.label}>{props.label}</Text>}
             </View>
         </View>
     );
 }
 
-const pinStyles = ({color, rotation, noArm }) => {
+const pinStyles = ({color, rotation, noArm, noDot }) => {
     return StyleSheet.create({
         pin: {
             width: 1,
@@ -36,8 +36,8 @@ const pinStyles = ({color, rotation, noArm }) => {
             height:20,
             top:-10,
             left: -10,
-            backgroundColor: color,
-            borderWidth: 2,
+            backgroundColor: !noDot ? color : 'transparent',
+            borderWidth: !noDot ? 2 : 0,
             borderColor: color,
             borderRadius: 10,
         },
@@ -56,7 +56,9 @@ const pinStyles = ({color, rotation, noArm }) => {
         label: {
             color: color,
             position: 'absolute',
-            top: -24,
+            top: !noDot ? -24 : 0,
+            fontSize: !noDot ? 15 : 18,
+            fontWeight: !noDot ? 'normal' : 'bold',
             left: 0,
             width: 100,
             textAlign: 'center',

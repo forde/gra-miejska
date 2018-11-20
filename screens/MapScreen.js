@@ -1,9 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, SegmentedControlIOS } from 'react-native';
+import { View, Text, StyleSheet, SegmentedControlIOS, TouchableOpacity } from 'react-native';
 import { MapView, Location, Permissions } from 'expo';
+import * as firebase from 'firebase';
 
 import Compass from '../components/Compass';
 import Loader from '../components/Loader';
+import Popup from '../components/Popup';
+import Button from '../components/Button';
 
 export default class MapScreen extends React.Component {
 
@@ -32,11 +35,13 @@ export default class MapScreen extends React.Component {
                 }
             ],
             mapRotation: 0,
+            popupVisible: false,
         };
     }
 
     componentDidMount() {
         this._getLocationAsync();
+        this._getGame();
     }
 
     _getLocationAsync = async () => {
@@ -62,8 +67,14 @@ export default class MapScreen extends React.Component {
         }
     }
 
+    _getGame() {
+        firebase.database().ref('/games').once('value').then(snapshot => {
+            console.log(snapshot);
+        });
+    }
+
     render() {
-        const { location, selectedMarker, markers, mapRotation } = this.state;
+        const { location, selectedMarker, markers, mapRotation, popupVisible } = this.state;
 
         const marker = markers[selectedMarker];
     
@@ -90,8 +101,14 @@ export default class MapScreen extends React.Component {
                             />
                         }
 
+                        <Popup visible={popupVisible} title="Gratulacje!" onCloseRequest={() => this.setState({ popupVisible: false }) } >
+                            <Text>Odblokowałeś kolejny marker!</Text>
+                        </Popup>
+
                     </React.Fragment>
                 }
+
+                <Button onPress={() => this.setState({ popupVisible: true })} style={{position:'absolute', bottom:20, right: 20 }}>Popup</Button>
 
                 <SegmentedControlIOS
                     style={{position:'absolute', top:20, left: 35, width:300 }}

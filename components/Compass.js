@@ -72,9 +72,9 @@ export default class Compass extends React.Component {
                 <View style={styles.compassWrapper}>
 
                     <CompassPin name="devide head" color={onCourse ? Colors.red : Colors.tintColor} rotation="0deg" outline />
-                    {/*<CompassPin name="north" color="blue" rotation={northRotationAngle+'deg'} label="N" noArm />*/}
+                    <CompassPin name="north" color={Colors.tintColor} rotation={northRotationAngle+'deg'} label="N" noArm noDot />
                     <CompassPin name="marker direction" color={Colors.red} rotation={devideHeadToMarkerAngle + 'deg'} noArm label={''+distanceToMarker+' m'} />
-                    {/*<CompassPin name="north pole" color="aqua" rotation={(deviceHeadToMapNorthAngle + mapRotation) + 'deg'} noArm label="N" /> */}   
+                    {/*<CompassPin name="north pole" color="aqua" rotation={(deviceHeadToMapNorthAngle + mapRotation) + 'deg'} noArm noDot label="N" /> */}   
 
                     <View style={[styles.userLocation, { borderColor: onCourse ? Colors.red : Colors.tintColor } ]} animation="rotate" iterationCount="infinite" duration={800}>
                         <Icon.Ionicons
